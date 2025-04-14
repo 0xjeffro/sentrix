@@ -1,12 +1,12 @@
-use std::sync::Arc;
+use crate::app::state::AppState;
 use axum::extract::State;
-use axum::http::{StatusCode};
-use axum::http::header::CONTENT_TYPE;
+use axum::http::StatusCode;
+use axum::response::IntoResponse;
 use axum::Json;
 use reqwest::Response;
-use axum::response::IntoResponse;
-use serde_json::{to_string, Value};
-use crate::app::state::AppState;
+use serde_json::Value;
+use std::sync::Arc;
+use std::time::Instant;
 
 pub async fn proxy_handler(
     State(app_state): State<Arc<AppState>>,
@@ -14,13 +14,15 @@ pub async fn proxy_handler(
 ) -> impl IntoResponse {
     #[cfg(debug_assertions)]
     println!("Received request from {}: {}", app_state.settings.app.name, payload);
-
+    
+    let proxy_start_time = Instant::now();
+    
     let response = app_state.http_client
         .post(&app_state.settings.backend.rpc_url)
         .json(&payload)
         .send().await;
 
-    match response {
+    let result = match response {
         Ok(resp) => build_proxy_response(resp).await,
         Err(err) => {
             #[cfg(debug_assertions)]
@@ -30,7 +32,11 @@ pub async fn proxy_handler(
                 "Failed to forward request".to_string(),
             ).into_response()
         }
-    }
+    };
+    let proxy_latency = proxy_start_time.elapsed();
+    #[cfg(debug_assertions)]
+    println!("Proxy latency: {}ms", proxy_latency.as_millis());
+    result
 }
 
 async fn build_proxy_response(resp: Response) -> axum::response::Response {
