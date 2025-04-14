@@ -1,0 +1,11 @@
+app_name = "sentrix"
+port = 8080
+
+[backend]
+rpc_url = ""
+yellowstone_grpc_url = ""
+yellowstone_grpc_token = ""
+
+[log]
+file = "/var/log/sentrix.log"
+level = "info" # Log level (e.g., "error" > "warn" > "info" > "debug" > "trace")

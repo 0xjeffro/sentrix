@@ -1,0 +1,12 @@
+[package]
+name = "sentrix"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+config = "0.15.11"
+serde = { version = "1.0.219", features = ["derive"] }
+tracing-subscriber = { version = "0.3.19", features = ["json"] }
+tracing = "0.1.41"
+axum = "0.8.3"
+tokio = { version = "1.44.2", features = ["macros", "rt-multi-thread"] }
