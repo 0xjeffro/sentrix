@@ -1,10 +1,17 @@
-app_name = "sentrix"
+[app]
+name = "sentrix"
 port = 8080
 
 [backend]
 rpc_url = ""
 yellowstone_grpc_url = ""
 yellowstone_grpc_token = ""
+
+[http_client]
+pool_max_idle_per_host = 32
+timeout_secs = 10
+connect_timeout_secs = 3
+pool_idle_timeout_secs = 90
 
 [log]
 file = "/var/log/sentrix.log"
