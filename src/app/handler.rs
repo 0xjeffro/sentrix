@@ -7,13 +7,18 @@ use reqwest::Response;
 use serde_json::Value;
 use std::sync::Arc;
 use std::time::Instant;
+use crate::auth::extractor::VerifiedToken;
 
 pub async fn proxy_handler(
     State(app_state): State<Arc<AppState>>,
+    VerifiedToken(auth_token): VerifiedToken,
     Json(payload): Json<Value>,
 ) -> impl IntoResponse {
     #[cfg(debug_assertions)]
     println!("Received request from {}: {}", app_state.settings.app.name, payload);
+    
+    #[cfg(debug_assertions)]
+    println!("Auth token: {:?}", auth_token);
     
     let proxy_start_time = Instant::now();
     

@@ -1,4 +1,5 @@
 use serde::Deserialize;
+use config;
 
 #[derive(Deserialize, Clone)]
 pub struct Settings {
@@ -34,6 +35,7 @@ pub struct Log {
     pub file: String,
     pub level: String,
 }
+
 
 impl Settings {
     pub fn new() -> Result<Self, config::ConfigError> {
