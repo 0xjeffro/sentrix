@@ -39,7 +39,7 @@ impl AuthToken {
         };
         serde_json::to_string(&s).map_err(|_| TokenError::SerializationError)
     }
-    
+
     pub fn compute_signature(&mut self, secret: &str, fill: bool) -> Result<String, TokenError> {
         let signable_str = self.signable_string()?;
         let mut mac = Hmac::<Sha256>::new_from_slice(secret.as_bytes())
@@ -52,7 +52,7 @@ impl AuthToken {
         }
         Ok(sig_str)
     }
-    
+
     pub fn generate_token(&self) -> Result<String, TokenError> {
         let token_str = serde_json::to_string(self).map_err(|_| TokenError::SerializationError)?;
         let encoded_token = general_purpose::URL_SAFE_NO_PAD.encode(token_str);
@@ -73,7 +73,7 @@ pub fn generate_token(secret: &str, user: &str, qps: u32, ttl_secs: u64) -> Stri
     println!("Raw token JSON: {}", json_str);
     raw_token.compute_signature(secret, true)
         .unwrap_or_else(|err| panic!("Failed to compute signature: {:?}", err));
-    
+
     #[cfg(debug_assertions)]
     println!("Raw token: {:?}", raw_token);
     #[cfg(debug_assertions)]
@@ -94,12 +94,12 @@ pub fn verify_token(token: &str, secret: &str) -> Result<AuthToken, TokenError> 
         .map_err(|_| TokenError::DecodeError)?;
     let mut auth_token:AuthToken = serde_json::from_slice(&decoded_bytes)
         .map_err(|_| TokenError::DecodeError)?;
-    
+
     let sig = auth_token.sig.as_ref()
         .ok_or(TokenError::MissingSignature)?
         .to_string();
     let expected_sig = auth_token.compute_signature(secret, false)?;
-    
+
     if sig != expected_sig {
         return Err(TokenError::InvalidSignature);
     }

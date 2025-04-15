@@ -3,6 +3,7 @@ use crate::app::startup::run_app;
 
 mod config;
 mod app;
+mod auth;
 
 #[tokio::main]
 async fn main() {
