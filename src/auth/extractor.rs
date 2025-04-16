@@ -27,8 +27,6 @@ where
     type Rejection = Response;
 
     async fn from_request_parts(parts: &mut Parts, state: &S) -> Result<Self, Self::Rejection> {
-        println!("State type: {:?}", std::any::type_name::<S>());
-
         // Extract 'token' from query parameters
         let query = Query::<TokenQuery>::from_request_parts(parts, state)
             .await

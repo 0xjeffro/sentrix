@@ -1,6 +1,6 @@
 use crate::app::state::AppState;
 use crate::auth::extractor::VerifiedToken;
-use axum::Json;
+use axum::{body, Json};
 use axum::extract::State;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
@@ -8,6 +8,7 @@ use reqwest::Response;
 use serde_json::Value;
 use std::sync::Arc;
 use std::time::Instant;
+use tracing::info;
 
 pub async fn proxy_handler(
     State(app_state): State<Arc<AppState>>,
@@ -19,11 +20,11 @@ pub async fn proxy_handler(
         "Received request from {}: {}",
         app_state.settings.app.name, payload
     );
-
-    #[cfg(debug_assertions)]
-    println!("Auth token: {:?}", auth_token);
-
-    let proxy_start_time = Instant::now();
+    
+    let start_time = Instant::now();
+    let request_id = uuid::Uuid::new_v4().to_string();
+    info!(event = "request_received", user = auth_token.user, request = payload.to_string(),
+        max_qps = auth_token.qps, exp = auth_token.exp, request_id = request_id);
 
     let response = app_state
         .http_client
@@ -32,25 +33,31 @@ pub async fn proxy_handler(
         .send()
         .await;
 
+    info!(event = "request_forwarded", user = auth_token.user, duration = start_time.elapsed().as_millis(),
+        backend_url = app_state.settings.backend.rpc_url, request_id = request_id);
+
     let result = match response {
-        Ok(resp) => build_proxy_response(resp).await,
+        Ok(resp) => {
+            build_proxy_response(resp, &request_id).await
+        },
         Err(err) => {
             #[cfg(debug_assertions)]
             eprintln!("Proxy error: {}", err);
             (
                 StatusCode::BAD_GATEWAY,
                 "Failed to forward request".to_string(),
-            )
-                .into_response()
+            ).into_response()
         }
     };
-    let proxy_latency = proxy_start_time.elapsed();
-    #[cfg(debug_assertions)]
-    println!("Proxy latency: {}ms", proxy_latency.as_millis());
+    info!(event = "response_sent", user = auth_token.user,
+        result = format!("{:?}", result),
+        duration = start_time.elapsed().as_millis(),
+        request_id = request_id
+    );
     result
 }
 
-async fn build_proxy_response(resp: Response) -> axum::response::Response {
+async fn build_proxy_response(resp: Response, request_id: &str) -> axum::response::Response {
     let status = resp.status();
 
     let content_type = resp
@@ -59,23 +66,36 @@ async fn build_proxy_response(resp: Response) -> axum::response::Response {
         .and_then(|h| h.to_str().ok())
         .unwrap_or("application/json")
         .to_string();
-
     match resp.bytes().await {
-        Ok(body) => (
-            status,
-            [(axum::http::header::CONTENT_TYPE, content_type)],
-            body,
-        )
-            .into_response(),
+        Ok(body) => {
+            info!(event = "response_body",
+                body = String::from_utf8_lossy(&body).to_string(),
+                status = status.to_string(),
+                content_type = content_type,
+                request_id = request_id,
+            );
+            (
+                status,
+                [(axum::http::header::CONTENT_TYPE, content_type)],
+                body,
+            ).into_response()
+        },
 
         Err(err) => {
             #[cfg(debug_assertions)]
             eprintln!("Failed to read response body: {}: {}", status, err);
+
+            let fallback_body = "Failed to read response body";
+            info!(event = "prepare_response",
+                body = fallback_body,
+                status = status.to_string(),
+                content_type = content_type,
+                request_id = request_id,
+            );
             (
                 StatusCode::BAD_GATEWAY,
-                "Failed to read backend response".to_string(),
-            )
-                .into_response()
+                fallback_body.to_string(),
+            ).into_response()
         }
     }
 }
