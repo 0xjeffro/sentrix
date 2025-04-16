@@ -1,18 +1,18 @@
-use serde::Deserialize;
 use config;
+use serde::Deserialize;
 
 #[derive(Deserialize, Clone)]
 pub struct Settings {
     pub app: App,
     pub backend: Backend,
     pub http_client: HttpClient,
-    pub log: Log
+    pub log: Log,
 }
 
 #[derive(Deserialize, Clone)]
 pub struct App {
     pub name: String,
-    pub port : u16,
+    pub port: u16,
     pub secret_key: String,
 }
 
@@ -36,11 +36,11 @@ pub struct Log {
     pub level: String,
 }
 
-
 impl Settings {
     pub fn new() -> Result<Self, config::ConfigError> {
         config::Config::builder()
             .add_source(config::File::with_name("config"))
-            .build()?.try_deserialize()
+            .build()?
+            .try_deserialize()
     }
 }
