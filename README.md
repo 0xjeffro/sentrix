@@ -7,21 +7,11 @@ Sentrix (from Sentinel + Metrics) acts as a high-performance reverse proxy that 
 forwards JSON-RPC requests, and emits rich traceable logs compatible with tools like [Vector](https://vector.dev/) and [Better Stack](https://betterstack.com/).
 
 ## 🚀 Features
-- ⚡️ **High-performance RPC forwarding** 
-
-    Built with reqwest + axum + async Rust, optimized for low-latency relay.
-- 🔒 **HMAC Token Verification** 
-
-    Supports HMAC token verification for secure communication.
-- 📊 **Observability**
-
-    Capture request payloads, backend latency, error status, response body, etc.
-- 🛠️ **Customizable**
-    
-    Easily extendable with custom handlers and middleware.
-- 📦 **Ready for production**
-  
-    TOML-configurable, supports custom log output paths, and integrates seamlessly with modern observability pipelines.
+- ⚡️ **High-performance RPC forwarding** Built with reqwest + axum + async Rust, optimized for low-latency relay.
+- 🔒 **HMAC Token Verification** Supports HMAC token verification for secure communication.
+- 📊 **Observability** Capture request payloads, backend latency, error status, response body, etc.
+- 🛠️ **Customizable** Easily extendable with custom handlers and middleware.
+- 📦 **Ready for production** TOML-configurable, supports custom log output paths, and integrates seamlessly with modern observability pipelines.
 
 ## 🔧 Configuration
 Sentrix uses a `default.toml` file. Example:
