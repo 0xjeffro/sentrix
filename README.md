@@ -1,7 +1,7 @@
 <p align="center">
 <img src="https://cdn3.iconfinder.com/data/icons/minecraft-icons/512/enderman.png" alt="tx-parser" width="80">
 </p>
-<h1 align="center">Sentrix</h1>
+<h1 align="center">SENTRIX</h1>
 
 Sentrix (from Sentinel + Metrics) acts as a high-performance reverse proxy that verifies HMAC-signed tokens, 
 forwards JSON-RPC requests, and emits rich traceable logs compatible with tools like [Vector](https://vector.dev/) and [Better Stack](https://betterstack.com/).
