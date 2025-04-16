@@ -1,4 +1,7 @@
-# sentrix
+<p align="center">
+<img src="https://cdn3.iconfinder.com/data/icons/minecraft-icons/512/enderman.png" alt="tx-parser" width="80">
+</p>
+<h1 align="center">Sentrix</h1>
 
 Sentrix (from Sentinel + Metrics) acts as a high-performance reverse proxy that verifies HMAC-signed tokens, 
 forwards JSON-RPC requests, and emits rich traceable logs compatible with tools like [Vector](https://vector.dev/) and [Better Stack](https://betterstack.com/).
@@ -41,7 +44,7 @@ connect_timeout_secs = 3          # Timeout for establishing TCP connection (in 
 pool_idle_timeout_secs = 90       # Duration to keep idle connections in the pool (in seconds)
 
 [log]
-file = "/var/log/sentrix.log"            # Path to the log file.
+file = "/var/log/sentrix.log"     # Path to the log file.
 level = "info"                    # Log verbosity level: one of "error", "warn", "info", "debug", or "trace"
 ```
 
