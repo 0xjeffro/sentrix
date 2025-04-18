@@ -49,14 +49,16 @@ where
                     return Err((
                         StatusCode::TOO_MANY_REQUESTS,
                         Json(json!({"message": "rate limit exceeded"})),
-                    ).into_response());
+                    )
+                        .into_response());
                 }
                 Ok(VerifiedToken(auth_token))
-            },
+            }
             Err(_) => Err((
                 StatusCode::UNAUTHORIZED,
                 Json(json!({"message": "invalid api key provided"})),
-            ).into_response()),
+            )
+                .into_response()),
         }
     }
 }
