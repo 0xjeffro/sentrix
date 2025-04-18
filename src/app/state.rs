@@ -42,6 +42,13 @@ impl AppState {
     
     pub fn update_and_check_rate_limit(&self, user_id: &str, user_qps: u32) -> bool {
         let now = Instant::now();
+        if let Some(rate_limit_state) = self.user_rate_limit_state.get(user_id) {
+            let elapsed = now.duration_since(rate_limit_state.last_request_time);
+            if elapsed <= Duration::from_secs(1) && rate_limit_state.request_count + 1 > user_qps as u64 {
+                return false; // Rate limit exceeded
+            }
+        }
+        
         let mut rate_limit_state = self.user_rate_limit_state.
             entry(user_id.to_string()).or_insert(RateLimitState {
             request_count: 0,
