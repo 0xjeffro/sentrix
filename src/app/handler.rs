@@ -49,9 +49,9 @@ pub async fn proxy_handler(
 
     let result = match response {
         Ok(resp) => build_proxy_response(resp, &request_id).await,
-        Err(err) => {
+        Err(_err) => {
             #[cfg(debug_assertions)]
-            eprintln!("Proxy error: {}", err);
+            eprintln!("Proxy error: {}", _err);
             (
                 StatusCode::BAD_GATEWAY,
                 "Failed to forward request".to_string(),
@@ -95,9 +95,9 @@ async fn build_proxy_response(resp: Response, request_id: &str) -> axum::respons
                 .into_response()
         }
 
-        Err(err) => {
+        Err(_err) => {
             #[cfg(debug_assertions)]
-            eprintln!("Failed to read response body: {}: {}", status, err);
+            eprintln!("Failed to read response body: {}: {}", status, _err);
 
             let fallback_body = "Failed to read response body";
             info!(

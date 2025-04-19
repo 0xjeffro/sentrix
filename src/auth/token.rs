@@ -68,9 +68,11 @@ pub fn generate_token(secret: &str, user: &str, qps: u32, ttl_secs: u64) -> Stri
         qps,
         sig: None,
     };
-    let json_str = raw_token.signable_string().unwrap();
     #[cfg(debug_assertions)]
-    println!("Raw token JSON: {}", json_str);
+    {
+        let _json_str = raw_token.signable_string().unwrap();
+        println!("Raw token JSON: {}", _json_str);
+    }
     raw_token
         .compute_signature(secret, true)
         .unwrap_or_else(|err| panic!("Failed to compute signature: {:?}", err));
@@ -85,9 +87,11 @@ pub fn generate_token(secret: &str, user: &str, qps: u32, ttl_secs: u64) -> Stri
     let decoded_token = general_purpose::URL_SAFE_NO_PAD
         .decode(encoded_token.clone())
         .unwrap();
-    let decoded_str = String::from_utf8(decoded_token).unwrap();
     #[cfg(debug_assertions)]
-    println!("Decoded token: {}", decoded_str);
+    {
+        let decoded_str = String::from_utf8(decoded_token).unwrap();
+        println!("Decoded token: {}", decoded_str);
+    }
     encoded_token
 }
 
