@@ -52,14 +52,14 @@ impl AuthToken {
         }
         Ok(sig_str)
     }
-
+    #[allow(dead_code)]
     pub fn generate_token(&self) -> Result<String, TokenError> {
         let token_str = serde_json::to_string(self).map_err(|_| TokenError::SerializationError)?;
         let encoded_token = general_purpose::URL_SAFE_NO_PAD.encode(token_str);
         Ok(encoded_token)
     }
 }
-
+#[allow(dead_code)]
 pub fn generate_token(secret: &str, user: &str, qps: u32, ttl_secs: u64) -> String {
     let expiration = (Utc::now() + Duration::seconds(ttl_secs as i64)).timestamp() as u64;
     let mut raw_token = AuthToken {
@@ -84,11 +84,11 @@ pub fn generate_token(secret: &str, user: &str, qps: u32, ttl_secs: u64) -> Stri
     let encoded_token = raw_token.generate_token().unwrap();
     #[cfg(debug_assertions)]
     println!("Generated token: {}", encoded_token);
-    let decoded_token = general_purpose::URL_SAFE_NO_PAD
-        .decode(encoded_token.clone())
-        .unwrap();
     #[cfg(debug_assertions)]
     {
+        let decoded_token = general_purpose::URL_SAFE_NO_PAD
+            .decode(encoded_token.clone())
+            .unwrap();
         let decoded_str = String::from_utf8(decoded_token).unwrap();
         println!("Decoded token: {}", decoded_str);
     }

@@ -19,7 +19,9 @@ pub struct App {
 #[derive(Deserialize, Clone)]
 pub struct Backend {
     pub rpc_url: String,
+    #[allow(dead_code)]
     pub yellowstone_grpc_url: String,
+    #[allow(dead_code)]
     pub yellowstone_grpc_token: String,
 }
 
