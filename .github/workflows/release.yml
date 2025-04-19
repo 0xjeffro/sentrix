@@ -5,6 +5,10 @@ on:
     tags:
       - 'v*' # Trigger on version tags (v1.0.0, v2.3.1, etc.)
 
+
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build and Release
