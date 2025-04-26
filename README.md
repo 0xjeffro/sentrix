@@ -52,5 +52,53 @@ Decoded structure:
 Token is passed via URL parameter:
 `POST /?token=eyJ1c2VyIjoiamVmZnJvIiwiZXhwIjo...`
 
+## ⚙️ Setting Up as a System Service
+To ensure Sentrix runs continuously and automatically starts on boot, you can configure it as a systemd service on Linux:
+1.	Create a systemd service file:
+```bash
+sudo vim /etc/systemd/system/sentrix.service
+```
+2.	Add the following content:
+```ini
+[Unit]
+Description=Sentrix Service
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/root/sentrix
+ExecStart=/root/sentrix/sentrix
+Restart=always
+RestartSec=2
+LimitNOFILE=1048576
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+```
+3.	Reload systemd to recognize the new service:
+```bash
+sudo systemctl daemon-reload
+```
+4.	Start the service:
+```bash
+sudo systemctl start sentrix
+```
+5.	Enable the service to start on boot:
+```bash
+sudo systemctl enable sentrix
+```
+6.	(Optional) Check the status of the service:
+```bash
+sudo systemctl status sentrix
+```
+7.	(Optional) View logs:
+```bash
+sudo journalctl -u sentrix
+```
+
+
+
 ## ✨ Coming Soon
 - Yellowstone gRPC integration
