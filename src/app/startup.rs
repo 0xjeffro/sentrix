@@ -5,7 +5,7 @@ use crate::config::Settings;
 use std::sync::Arc;
 
 pub async fn run_app(settings: Settings) {
-    init_logger(&settings);
+    let _guard = init_logger(&settings);
     let app_state = Arc::new(AppState::new(&settings));
     let app = build_router(app_state.clone());
 

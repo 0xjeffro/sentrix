@@ -18,3 +18,4 @@ base64 = "0.22.1"
 chrono = "0.4.40"
 dashmap = "7.0.0-rc2"
 uuid = { version = "1.16.0", features = ["v4"] }
+tracing-appender = "0.2.3"
