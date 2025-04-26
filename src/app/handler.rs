@@ -8,7 +8,7 @@ use reqwest::Response;
 use serde_json::Value;
 use std::sync::Arc;
 use std::time::Instant;
-use tracing::info;
+use tracing::{info, trace};
 
 pub async fn proxy_handler(
     State(app_state): State<Arc<AppState>>,
@@ -23,7 +23,7 @@ pub async fn proxy_handler(
 
     let start_time = Instant::now();
     let request_id = uuid::Uuid::new_v4().to_string();
-    info!(
+    trace!(
         event = "request_received",
         user = auth_token.user,
         request = payload.to_string(),
@@ -32,6 +32,11 @@ pub async fn proxy_handler(
         request_id = request_id
     );
 
+    let rpc_method = payload
+        .get("method")
+        .and_then(|v| v.as_str())
+        .unwrap_or("unknown");
+
     let response = app_state
         .http_client
         .post(&app_state.settings.backend.rpc_url)
@@ -39,7 +44,7 @@ pub async fn proxy_handler(
         .send()
         .await;
 
-    info!(
+    trace!(
         event = "request_forwarded",
         user = auth_token.user,
         duration = start_time.elapsed().as_secs_f64() * 1000.0,
@@ -59,10 +64,16 @@ pub async fn proxy_handler(
                 .into_response()
         }
     };
-    info!(
+    trace!(
         event = "response_sent",
         user = auth_token.user,
         result = format!("{:?}", result),
+        duration = start_time.elapsed().as_secs_f64() * 1000.0,
+        request_id = request_id
+    );
+    info!(
+        event = "latency_log",
+        rpc_method = rpc_method,
         duration = start_time.elapsed().as_secs_f64() * 1000.0,
         request_id = request_id
     );
@@ -80,7 +91,7 @@ async fn build_proxy_response(resp: Response, request_id: &str) -> axum::respons
         .to_string();
     match resp.bytes().await {
         Ok(body) => {
-            info!(
+            trace!(
                 event = "response_body",
                 body = String::from_utf8_lossy(&body).to_string(),
                 status = status.to_string(),
@@ -100,7 +111,7 @@ async fn build_proxy_response(resp: Response, request_id: &str) -> axum::respons
             eprintln!("Failed to read response body: {}: {}", status, _err);
 
             let fallback_body = "Failed to read response body";
-            info!(
+            trace!(
                 event = "prepare_response",
                 body = fallback_body,
                 status = status.to_string(),
