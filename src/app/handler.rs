@@ -42,7 +42,7 @@ pub async fn proxy_handler(
     info!(
         event = "request_forwarded",
         user = auth_token.user,
-        duration = start_time.elapsed().as_millis(),
+        duration = start_time.elapsed().as_secs_f64() * 1000.0,
         backend_url = app_state.settings.backend.rpc_url,
         request_id = request_id
     );
@@ -63,7 +63,7 @@ pub async fn proxy_handler(
         event = "response_sent",
         user = auth_token.user,
         result = format!("{:?}", result),
-        duration = start_time.elapsed().as_millis(),
+        duration = start_time.elapsed().as_secs_f64() * 1000.0,
         request_id = request_id
     );
     result
