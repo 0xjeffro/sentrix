@@ -71,11 +71,10 @@ pub async fn proxy_handler(
         duration = start_time.elapsed().as_secs_f64() * 1000.0,
         request_id = request_id
     );
-    info!(
-        event = "latency_log",
-        rpc_method = rpc_method,
-        duration = start_time.elapsed().as_secs_f64() * 1000.0,
-        request_id = request_id
+    app_state.update_and_log_rpc_method_state(
+        &auth_token.user,
+        rpc_method,
+        start_time.elapsed().as_secs_f64() * 1000.0,
     );
     result
 }

@@ -124,7 +124,7 @@ mod tests {
         use crate::config::Settings;
         let settings = Settings::new().unwrap();
         let secret = settings.app.secret_key.clone();
-        let token = generate_token(&secret, "jeffro", 1000, 180000000);
+        let token = generate_token(&secret, "jeffro", 10000000, 180000000);
 
         println!("Generated token: {}", token);
     }
@@ -134,7 +134,7 @@ mod tests {
         use crate::config::Settings;
         let settings = Settings::new().unwrap();
         let secret = settings.app.secret_key.clone();
-        let token = generate_token(&secret, "jeffro", 100, 1800);
+        let token = generate_token(&secret, "chuck", 100000000, 1800);
 
         println!("Generated token: {}", token);
 
