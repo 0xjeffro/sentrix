@@ -1,8 +1,6 @@
-use std::collections::HashMap;
 use crate::config::Settings;
 use dashmap::DashMap;
 use std::time::{Duration, Instant};
-use serde_json::Value;
 use tracing::info;
 
 #[derive(Clone)]
@@ -34,10 +32,10 @@ impl UserRpcMethodState {
         }
     }
     
-    pub fn log_if_needed(&mut self) {
+    pub fn log_if_needed(&mut self, user_rpc_log_interval: u64) {
         // Log the state of this user
         let now = Instant::now();
-        if now.duration_since(self.last_log_time).as_secs() > 10 {
+        if now.duration_since(self.last_log_time).as_secs() > user_rpc_log_interval {
             // Log the state
             for pair in self.rpc_method_state.iter() {
                 let method = pair.key();
@@ -183,6 +181,6 @@ impl AppState {
 
             rpc_method_state.update(response_time);
         }
-        user_rpc_method_state.log_if_needed();
+        user_rpc_method_state.log_if_needed(self.settings.log.user_rpc_log_interval);
     }
 }

@@ -36,6 +36,7 @@ pub struct HttpClient {
 pub struct Log {
     pub file: String,
     pub level: String,
+    pub user_rpc_log_interval: u64,
 }
 
 impl Settings {
