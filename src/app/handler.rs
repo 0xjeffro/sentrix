@@ -8,7 +8,7 @@ use reqwest::Response;
 use serde_json::Value;
 use std::sync::Arc;
 use std::time::Instant;
-use tracing::{info, trace};
+use tracing::trace;
 
 pub async fn proxy_handler(
     State(app_state): State<Arc<AppState>>,

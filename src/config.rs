@@ -1,4 +1,3 @@
-use config;
 use serde::Deserialize;
 
 #[derive(Deserialize, Clone)]

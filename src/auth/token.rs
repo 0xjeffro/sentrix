@@ -46,7 +46,7 @@ impl AuthToken {
             .map_err(|_| TokenError::InvalidSecret)?;
         mac.update(signable_str.as_bytes());
         let sig = mac.finalize().into_bytes();
-        let sig_str = general_purpose::URL_SAFE_NO_PAD.encode(&sig);
+        let sig_str = general_purpose::URL_SAFE_NO_PAD.encode(sig);
         if fill {
             self.sig = Some(sig_str.clone());
         }

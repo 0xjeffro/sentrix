@@ -154,11 +154,7 @@ impl AppState {
             true
         } else {
             rate_limit_state.request_count += 1;
-            if rate_limit_state.request_count > user_qps as u64 {
-                false
-            } else {
-                true
-            }
+            rate_limit_state.request_count <= user_qps as u64
         }
     }
     
