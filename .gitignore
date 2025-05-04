@@ -17,3 +17,5 @@ Cargo.lock
 /config.toml
 
 sentrix.log
+
+.DS_Store
