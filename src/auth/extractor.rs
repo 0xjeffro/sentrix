@@ -45,6 +45,15 @@ where
             Ok(auth_token) => {
                 let user_id = &auth_token.user;
                 let max_qps = &auth_token.qps;
+                let expiration = auth_token.exp;
+                let now = chrono::Utc::now().timestamp() as u64;
+                if expiration < now {
+                    return Err((
+                        StatusCode::UNAUTHORIZED,
+                        Json(json!({"message": "token expired"})),
+                    )
+                        .into_response());
+                }
                 if !app_state.update_and_check_rate_limit(user_id, *max_qps) {
                     return Err((
                         StatusCode::TOO_MANY_REQUESTS,
